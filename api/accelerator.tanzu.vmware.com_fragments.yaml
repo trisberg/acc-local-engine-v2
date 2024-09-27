@@ -1,0 +1,109 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.15.0
+  name: fragments.accelerator.tanzu.vmware.com
+spec:
+  group: accelerator.tanzu.vmware.com
+  names:
+    kind: Fragment
+    listKind: FragmentList
+    plural: fragments
+    shortNames:
+    - frag
+    singular: fragment
+  scope: Namespaced
+  versions:
+  - name: v2
+    schema:
+      openAPIV3Schema:
+        description: Fragment is the Schema for the fragments API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: FragmentSpec defines the desired state of Fragment
+            properties:
+              git:
+                description: Git defines the fragment source Git repository
+                properties:
+                  ref:
+                    description: |-
+                      The Git reference to checkout and monitor for changes, defaults to
+                      main branch.
+                    properties:
+                      branch:
+                        description: Branch to check out, defaults to 'main' if no
+                          other field is defined.
+                        type: string
+                      commit:
+                        description: Commit SHA to check out, takes precedence over
+                          all reference fields.
+                        type: string
+                      name:
+                        description: |-
+                          Name of the reference to check out; takes precedence over Branch, Tag and SemVer.
+
+
+                          It must be a valid Git reference: https://git-scm.com/docs/git-check-ref-format#_description
+                          Examples: "refs/heads/main", "refs/tags/v0.1.0", "refs/pull/420/head", "refs/merge-requests/1/head"
+                        type: string
+                      semver:
+                        description: SemVer tag expression to check out, takes precedence
+                          over Tag.
+                        type: string
+                      tag:
+                        description: Tag to check out, takes precedence over Branch.
+                        type: string
+                    type: object
+                  subPath:
+                    description: |-
+                      SubPath is the folder inside the git repository to consider as
+                      the root of the accelerator or fragment. Defaults at the root
+                      of the repository.
+                    type: string
+                  url:
+                    description: The repository URL, can be a HTTP/S or SSH address.
+                    pattern: ^(http|https|ssh)://
+                    type: string
+                required:
+                - url
+                type: object
+              localFile:
+                description: |-
+                  LocalFile defines the fragment location on the local filesystem.
+                  LOCAL USE ONLY: the registration of accelerators from local filesystem is
+                  not supported when defined for UCP Project
+                properties:
+                  path:
+                    description: The local root directory for the accelerator or fragment.
+                    type: string
+                required:
+                - path
+                type: object
+            type: object
+          status:
+            description: FragmentStatus defines the observed state of Fragment
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
